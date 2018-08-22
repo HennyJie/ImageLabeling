@@ -1,5 +1,6 @@
 import os
 import vtk, ctk, slicer
+import sys, getopt
 
 def getVtkImageDataAsOpenCvMat(volumeNodeName):
     cameraVolume = slicer.util.getNode(volumeNodeName)
@@ -47,3 +48,10 @@ def CollectingImages(imageClassName):
     cv2.imwrite(os.path.join(imageClassFilePath,fileName), imDataBGR)
 
 
+def main(argv):
+    imageClassName = str(sys.argv[1])
+    CollectingImages(imageClassName)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
