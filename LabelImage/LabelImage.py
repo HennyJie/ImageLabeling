@@ -11,10 +11,10 @@ def getVtkImageDataAsOpenCvMat(volumeNodeName):
     if components > 1:
         shape.append(components)
         shape.remove(1)
-    imageMat = vtk.util.numpy_support.vtk_to_numpy(image.GetPointdata()).reshape(shape)
+    imageMat = vtk.util.numpy_support.vtk_to_numpy(image.GetPointData().GetScalars()).reshape(shape)
     return imageMat
 
-def CollectingImages(imageClassName):
+def CollectingImages():
     import numpy
     try:
         # the module is in the python path
@@ -36,8 +36,10 @@ def CollectingImages(imageClassName):
             cv2Path = cv2File
         cv2 = imp.load_dynamic('cv2', cv2File)
 
+    imageClassName = str(sys.argv[1])
     basePath = os.path.dirname(os.path.abspath(__file__))
     imageClassFilePath = os.path.join(basePath, 'imageFrames')
+
     numImagesInFile = len(os.listdir(imageClassFilePath))
     imData = getVtkImageDataAsOpenCvMat('Webcam Reference')
     imDataBGR = cv2.cvtColor(imData,cv2.COLOR_RGB2BGR)
@@ -48,10 +50,5 @@ def CollectingImages(imageClassName):
     cv2.imwrite(os.path.join(imageClassFilePath,fileName), imDataBGR)
 
 
-def main(argv):
-    imageClassName = str(sys.argv[1])
-    CollectingImages(imageClassName)
-
-
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    CollectingImages()
