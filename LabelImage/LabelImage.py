@@ -1,6 +1,7 @@
 import os
 import vtk, ctk, slicer
 import sys, getopt
+import argparse
 
 def getVtkImageDataAsOpenCvMat(volumeNodeName):
     cameraVolume = slicer.util.getNode(volumeNodeName)
@@ -14,7 +15,7 @@ def getVtkImageDataAsOpenCvMat(volumeNodeName):
     imageMat = vtk.util.numpy_support.vtk_to_numpy(image.GetPointData().GetScalars()).reshape(shape)
     return imageMat
 
-def CollectingImages():
+def CollectingImages(args):
     import numpy
     try:
         # the module is in the python path
@@ -36,7 +37,7 @@ def CollectingImages():
             cv2Path = cv2File
         cv2 = imp.load_dynamic('cv2', cv2File)
 
-    imageClassName = str(sys.argv[1])
+    imageClassName = args.class_name
     basePath = os.path.dirname(os.path.abspath(__file__))
     imageClassFilePath = os.path.join(basePath, 'imageFrames')
 
@@ -49,6 +50,12 @@ def CollectingImages():
         fileName = imageClassName + "_" + str(numImagesInFile) + '.jpg'
     cv2.imwrite(os.path.join(imageClassFilePath,fileName), imDataBGR)
 
+def parse_arguments(argv):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--class_name', type=str,
+                        help='class of the object appear in this frame', default='nothing')
+    return parser.parse_args(argv)
 
 if __name__ == "__main__":
-    CollectingImages()
+    # CollectingImages()
+    CollectingImages(parse_arguments(sys.argv[1:]))
